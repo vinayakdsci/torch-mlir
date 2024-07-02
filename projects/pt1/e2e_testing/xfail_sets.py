@@ -830,6 +830,9 @@ FX_IMPORTER_STABLEHLO_CRASHING_SET = {
 }
 
 STABLEHLO_PASS_SET = {
+    "ReduceAminmaxSingleDim_basic",
+    "ReduceAminmaxAllDims_basic",
+    "ReduceAmaxEmptyDim_basic",
     "ReduceMinAlongDimNegative_basic",
     "ReduceMinAlongDim_basic",
     "ArgminModule_with_dim",
@@ -1502,6 +1505,7 @@ STABLEHLO_CRASHING_SET = {"IndexPutWithNoneAndBroadcastModule_basic"}
 # Write the TOSA set as a "passing" set as it is very early in development
 # and very few tests work yet.
 TOSA_PASS_SET = {
+    "ArgmaxKeepdimModule_basic",
     "MeshgridIndexingIJ_basic",
     "MeshgridIndexingXY_basic",
     "Meshgrid_basic",
@@ -2569,8 +2573,6 @@ ONNX_XFAIL_SET = {
     "SplitDimStaticModule_basic",
     "SqrtIntConstantModule_basic",
     "SqrtIntModule_basic",
-    "StdCorrectionEmptyDimModule_basic",
-    "StdDimEmptyDimModule_basic",
     "SubFloatModule_basic",
     "SubIntModule_basic",
     "TanhBackward_basic",
@@ -2624,8 +2626,6 @@ ONNX_XFAIL_SET = {
     "UpSampleNearest2dDynamicFactor_basic",
     "UpSampleNearest2dStaticFactor_basic",
     "UpSampleNearest2d_basic",
-    "VarCorrectionEmptyDimModule_basic",
-    "VarDimEmptyDimModule_basic",
     "ViewCollapseDynamicWithAtenSizeIntModule_basic",
     "ViewCollapseModule_basic",
     "ViewDynamicExpandCollapseModule_basic",
@@ -2794,6 +2794,10 @@ ONNX_CRASHING_SET = {
     # Runtime crash: mismatched size for broadcast
     "MaxPool2dWithIndicesAllNegativeValuesModule_basic",
     "MaxPool2dWithIndicesNonDefaultPaddingModule_basic",
+    "StdDimEmptyDimModule_basic",
+    "StdCorrectionEmptyDimModule_basic",
+    "VarCorrectionEmptyDimModule_basic",
+    "VarDimEmptyDimModule_basic",
 }
 
 FX_IMPORTER_TOSA_XFAIL_SET = {
