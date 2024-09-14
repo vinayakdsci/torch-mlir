@@ -1134,12 +1134,45 @@ void mlir::torch::onnx_c::populateDefaultDomainAtoF(
               newContents.push_back(apval);
             }
             denseAttr = DenseElementsAttr::get(ty, newContents);
-          } else {
-            denseAttr = DenseElementsAttr::getFromRawBuffer(ty, data);
-          }
+          } else if (auto cst = cast<ShapedType>(attr.getType());
+                     attr.isSplat()) {
+            auto width = cst.getElementTypeBitWidth();
+            if (cst.getElementType().isUnsignedInteger(width)) {
+              llvm::SmallVector<APInt> newContents;
+              for (auto val : data) {
+                APInt apval(width, val, false);
+                newContents.push_back(apval);
+              }
+              denseAttr = DenseElementsAttr::get(ty, newContents);
+            } else if (cst.getElementType().isSignedInteger(width)) {
+              llvm::SmallVector<APInt> newContents;
+              for (auto val : data) {
+                APInt apval(width, val, true);
+                newContents.push_back(apval);
+              }
+              denseAttr = DenseElementsAttr::get(ty, newContents);
+            } else if (cst.getElementType().isSignlessInteger(width)) {
+              return rewriter.notifyMatchFailure(
+                  binder.op,
+                  "unimplemented: no support for signless integral constants.");
+            } else if (cst.getElementType().isIntOrFloat()) {
+              // Already handles signed/unsigned integers before, so this
+              // must be a float.
+              llvm::SmallVector<APFloat> newContents;
+              for (double val : data) {
+                if (width == 32)
+                  val = (float)val;
 
+                APFloat apval(val);
+                newContents.push_back(apval);
+              }
+              denseAttr = DenseElementsAttr::get(ty, newContents);
+            } else {
+              llvm_unreachable("did not expect this type for tensor elements");
+            }
+          }
           rewriter.replaceOpWithNewOp<Torch::ValueTensorLiteralOp>(
-              binder.op, resultType, denseAttr);
+              binder.op, resultType, !attr.isSplat() ? attr : denseAttr);
           return success();
         }
 
